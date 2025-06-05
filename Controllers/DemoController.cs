@@ -2,7 +2,6 @@ namespace DomainEventDispatcher.Controllers
 {
     using DomainEventDispatcher.Data;
     using DomainEventDispatcher.Domain.PersonAggregate;
-    using DomainEventDispatcher.Features.Person.Create;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
 
@@ -14,12 +13,10 @@ namespace DomainEventDispatcher.Controllers
     [Route("[controller]")]
     public class DomainEventDemoController : ControllerBase
     {
-        private readonly CreatePersonCommand _createUserCommand;
         private readonly AppDbContext _db;
 
         public DomainEventDemoController(AppDbContext dbContext)
         {
-            _createUserCommand = createUserCommand;
             _db = dbContext;
         }
 

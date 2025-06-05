@@ -2,22 +2,22 @@ using DomainEventDispatcher.Abstractions;
 using DomainEventDispatcher.Data;
 using DomainEventDispatcher.Data.Interceptors;
 using DomainEventDispatcher.Domain.PersonAggregate;
-using DomainEventDispatcher.Features.Person.Create;
-using DomainEventDispatcher.Features.Person.EventHandlers;
+using DomainEventDispatcher.EventHandlers;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-builder.Services.AddScoped<CreatePersonCommand>();
+builder.Services.AddSwaggerGen(options =>
+{
+    var xmlFilename = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+});
 
 builder.Services.AddScoped<DispatchDomainEventsInterceptor>();
+
 builder.Services.AddScoped<IDomainEventHandler<PersonCreatedDomainEvent>, PersonCreatedDomainEventHandler>();
 
 builder.Services.AddDbContext<AppDbContext>((sp, o) =>

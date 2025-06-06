@@ -1,6 +1,7 @@
-﻿namespace DomainEventDispatcher.Abstractions
+﻿namespace DomainEventDispatcher.SharedKernel.Primitives
 {
     using System.ComponentModel.DataAnnotations;
+    using DomainEventDispatcher.SharedKernel.Abstractions;
 
     public class Entity
     {

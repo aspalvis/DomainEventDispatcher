@@ -1,7 +1,7 @@
 ﻿namespace DomainEventDispatcher.Domain.PersonAggregate
 {
-    using DomainEventDispatcher.Abstractions;
     using DomainEventDispatcher.Domain.UserAggregate;
+    using DomainEventDispatcher.SharedKernel.Primitives;
 
     public class Person : Entity
     {

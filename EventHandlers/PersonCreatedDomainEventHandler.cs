@@ -2,12 +2,12 @@
 {
     using System.Threading;
     using System.Threading.Tasks;
-    using DomainEventDispatcher.Abstractions;
     using DomainEventDispatcher.Data;
     using DomainEventDispatcher.Domain.PersonAggregate;
     using DomainEventDispatcher.Domain.UserAggregate;
+    using DomainEventDispatcher.SharedKernel.Primitives;
 
-    public class PersonCreatedDomainEventHandler : IDomainEventHandler<PersonCreatedDomainEvent>
+    public class PersonCreatedDomainEventHandler : DomainEventHandler<PersonCreatedDomainEvent>
     {
         private readonly AppDbContext _db;
 
@@ -16,7 +16,7 @@
             _db = db;
         }
 
-        public Task Handle(PersonCreatedDomainEvent notification, CancellationToken cancellationToken = default)
+        public override Task Handle(PersonCreatedDomainEvent notification, CancellationToken cancellationToken = default)
         {
             var user = User.Create(notification.Person);
 

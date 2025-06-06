@@ -1,14 +1,13 @@
 ﻿namespace DomainEventDispatcher.Data.Interceptors
 {
-    using System.Collections.Concurrent;
-    using System.Reflection;
-    using DomainEventDispatcher.Abstractions;
+    using DomainEventDispatcher.SharedKernel.Abstractions;
+    using DomainEventDispatcher.SharedKernel.Primitives;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Diagnostics;
+    using Microsoft.Extensions.DependencyInjection;
 
     public class DispatchDomainEventsInterceptor : SaveChangesInterceptor
     {
-        private static readonly ConcurrentDictionary<Type, MethodInfo> _handlerMethodCache = [];
         private readonly IServiceProvider _serviceProvider;
 
         public DispatchDomainEventsInterceptor(IServiceProvider serviceProvider)
@@ -43,35 +42,33 @@
                 }
             }
 
-            foreach (var domainEvent in events)
-            {
-                await Dispatch(domainEvent, cancellationToken);
-            }
-        }
-
-        private async Task Dispatch(IDomainEvent domainEvent, CancellationToken cancellationToken)
-        {
-            var eventType = domainEvent.GetType();
-            var handlerType = typeof(IDomainEventHandler<>).MakeGenericType(eventType);
-
-            var handlers = _serviceProvider.GetServices(handlerType);
-
-            if (handlers is null)
+            if (events.Count == 0)
             {
                 return;
             }
 
-            var handleMethod = _handlerMethodCache.GetOrAdd(eventType, type =>
-                handlerType.GetMethod(nameof(IDomainEventHandler<IDomainEvent>.Handle))!);
-
-            foreach (var handler in handlers)
+            foreach (var domainEvent in events)
             {
-                var task = (Task?)handleMethod.Invoke(handler, new object[] { domainEvent, cancellationToken });
+                await Dispatch(domainEvent, cancellationToken);
+            }
 
-                if (task != null)
-                {
-                    await task;
-                }
+            //For cases when domain event is triggering other domain events, and change tracker will have new entries
+            await DispatchDomainEventsAsync(context, cancellationToken);
+        }
+
+        private async Task Dispatch(IDomainEvent domainEvent, CancellationToken cancellationToken)
+        {
+            var type = domainEvent.GetType();
+            var keyedHandlers = _serviceProvider.GetKeyedServices<IDomainEventHandler>($"{type.Name}Handler");
+
+            if (keyedHandlers is null)
+            {
+                return;
+            }
+
+            foreach (var handler in keyedHandlers)
+            {
+                await handler.Handle(domainEvent, cancellationToken);
             }
         }
     }

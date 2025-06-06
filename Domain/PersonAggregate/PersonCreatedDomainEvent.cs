@@ -1,6 +1,6 @@
 ﻿namespace DomainEventDispatcher.Domain.PersonAggregate
 {
-    using DomainEventDispatcher.Abstractions;
+    using DomainEventDispatcher.SharedKernel.Abstractions;
 
     public sealed class PersonCreatedDomainEvent : IDomainEvent
     {

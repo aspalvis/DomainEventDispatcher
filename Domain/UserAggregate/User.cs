@@ -1,7 +1,7 @@
 ﻿namespace DomainEventDispatcher.Domain.UserAggregate
 {
-    using DomainEventDispatcher.Abstractions;
     using DomainEventDispatcher.Domain.PersonAggregate;
+    using DomainEventDispatcher.SharedKernel.Primitives;
 
     public class User : Entity
     {
@@ -13,11 +13,15 @@
 
         public static User Create(Person person)
         {
-            return new()
+            var user = new User()
             {
                 Person = person,
                 Username = $"{person.Name}.{person.LastName}"
             };
+
+            user.RaiseDomainEvent(new UserCreatedDomainEvent(user));
+
+            return user;
         }
     }
 }

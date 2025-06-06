@@ -11,11 +11,11 @@ namespace DomainEventDispatcher.Controllers
     /// </summary>
     [ApiController]
     [Route("[controller]")]
-    public class DomainEventDemoController : ControllerBase
+    public class DemoController : ControllerBase
     {
         private readonly AppDbContext _db;
 
-        public DomainEventDemoController(AppDbContext dbContext)
+        public DemoController(AppDbContext dbContext)
         {
             _db = dbContext;
         }

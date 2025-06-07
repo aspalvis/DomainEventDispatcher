@@ -1,6 +1,5 @@
-﻿namespace DomainEventDispatcher.Domain.PersonAggregate
+﻿namespace DomainEventDispatcher.Domain.UserAggregate
 {
-    using DomainEventDispatcher.Domain.UserAggregate;
     using DomainEventDispatcher.SharedKernel.Abstractions;
 
     public sealed class UserCreatedDomainEvent : IDomainEvent

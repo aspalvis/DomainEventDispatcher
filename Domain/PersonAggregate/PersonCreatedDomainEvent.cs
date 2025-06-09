@@ -1,8 +1,8 @@
 ﻿namespace DomainEventDispatcher.Domain.PersonAggregate
 {
-    using DomainEventDispatcher.SharedKernel.Abstractions;
+    using ASCA.ToolKit.SharedKernel.CQRS;
 
-    public sealed class PersonCreatedDomainEvent : IDomainEvent
+    public sealed class PersonCreatedDomainEvent : INotification
     {
         public PersonCreatedDomainEvent(Person person)
         {

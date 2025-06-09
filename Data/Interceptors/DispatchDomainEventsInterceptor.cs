@@ -1,18 +1,17 @@
 ﻿namespace DomainEventDispatcher.Data.Interceptors
 {
-    using DomainEventDispatcher.SharedKernel.Abstractions;
+    using ASCA.ToolKit.SharedKernel.CQRS;
     using DomainEventDispatcher.SharedKernel.Primitives;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Diagnostics;
-    using Microsoft.Extensions.DependencyInjection;
 
     public class DispatchDomainEventsInterceptor : SaveChangesInterceptor
     {
-        private readonly IServiceProvider _serviceProvider;
+        private readonly INotificationSender _sender;
 
-        public DispatchDomainEventsInterceptor(IServiceProvider serviceProvider)
+        public DispatchDomainEventsInterceptor(INotificationSender sender)
         {
-            _serviceProvider = serviceProvider;
+            _sender = sender;
         }
 
         public override async ValueTask<InterceptionResult<int>> SavingChangesAsync(
@@ -31,7 +30,7 @@
                 return;
             }
 
-            var events = new List<IDomainEvent>();
+            var events = new List<INotification>();
 
             foreach (var entry in context.ChangeTracker.Entries<Entity>())
             {
@@ -49,27 +48,11 @@
 
             foreach (var domainEvent in events)
             {
-                await Dispatch(domainEvent, cancellationToken);
+                await _sender.SendNotificationAsync(domainEvent, cancellationToken);
             }
 
             //For cases when domain event is triggering other domain events, and change tracker will have new entries
             await DispatchDomainEventsAsync(context, cancellationToken);
-        }
-
-        private async Task Dispatch(IDomainEvent domainEvent, CancellationToken cancellationToken)
-        {
-            var type = domainEvent.GetType();
-            var keyedHandlers = _serviceProvider.GetKeyedServices<IDomainEventHandler>($"{type.Name}Handler");
-
-            if (keyedHandlers is null)
-            {
-                return;
-            }
-
-            foreach (var handler in keyedHandlers)
-            {
-                await handler.Handle(domainEvent, cancellationToken);
-            }
         }
     }
 }

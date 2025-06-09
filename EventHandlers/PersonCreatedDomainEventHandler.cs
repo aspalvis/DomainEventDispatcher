@@ -2,12 +2,12 @@
 {
     using System.Threading;
     using System.Threading.Tasks;
+    using ASCA.ToolKit.SharedKernel.CQRS;
     using DomainEventDispatcher.Data;
     using DomainEventDispatcher.Domain.PersonAggregate;
     using DomainEventDispatcher.Domain.UserAggregate;
-    using DomainEventDispatcher.SharedKernel.Primitives;
 
-    public class PersonCreatedDomainEventHandler : DomainEventHandler<PersonCreatedDomainEvent>
+    public class PersonCreatedDomainEventHandler : NotificationHandler<PersonCreatedDomainEvent>
     {
         private readonly AppDbContext _db;
 

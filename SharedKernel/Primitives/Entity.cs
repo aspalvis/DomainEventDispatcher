@@ -1,18 +1,18 @@
 ﻿namespace DomainEventDispatcher.SharedKernel.Primitives
 {
     using System.ComponentModel.DataAnnotations;
-    using DomainEventDispatcher.SharedKernel.Abstractions;
+    using ASCA.ToolKit.SharedKernel.CQRS;
 
     public class Entity
     {
-        private readonly List<IDomainEvent> _domainEvents = [];
+        private readonly List<INotification> _domainEvents = [];
 
         [Key]
         public int Id { get; set; }
 
-        public IReadOnlyList<IDomainEvent> GetDomainEvents() => [.. _domainEvents];
+        public IReadOnlyList<INotification> GetDomainEvents() => [.. _domainEvents];
 
-        public void RaiseDomainEvent(IDomainEvent domainEvent)
+        public void RaiseDomainEvent(INotification domainEvent)
         {
             _domainEvents.Add(domainEvent);
         }

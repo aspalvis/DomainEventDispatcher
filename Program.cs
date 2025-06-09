@@ -1,13 +1,13 @@
 using System.Reflection;
+using ASCA.ToolKit.Notifier;
 using DomainEventDispatcher.Data;
 using DomainEventDispatcher.Data.Interceptors;
-using DomainEventDispatcher.SharedKernel.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Idea
-builder.Services.AddDomainEventHandlers(Assembly.GetExecutingAssembly());
+builder.Services.AddNotifier(Assembly.GetExecutingAssembly());
 
 // Data
 builder.Services.AddScoped<DispatchDomainEventsInterceptor>();
